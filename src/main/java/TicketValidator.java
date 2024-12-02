@@ -1,3 +1,4 @@
+
 public class TicketValidator {
     
     // Validar que la descripción no sea nula ni vacía
@@ -14,4 +15,4 @@ public class TicketValidator {
     public static boolean validatePrioridad(String prioridad) {
         return prioridad != null && (prioridad.equals("Alta") || prioridad.equals("Media") || prioridad.equals("Baja"));
     }
-}
+}//finalización de clase.
