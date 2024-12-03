@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # O windows-latest si prefieres usar Windows
+    runs-on: ubuntu-latest  
 
     steps:
       - name: Check out repository
@@ -19,17 +19,17 @@ jobs:
       - name: Set up JDK 22
         uses: actions/setup-java@v2
         with:
-          java-version: '22.0.2'  # Versión específica de Java
-          distribution: 'temurin'  # Usamos 'temurin', que es la marca de OpenJDK por parte de Adoptium
+          java-version: '22.0.2' 
+          distribution: 'temurin'  
           java-package: 'jdk'
           architecture: 'x64'
           check-latest: false
 
       - name: Change directory to project folder
-        run: cd src  # Cambia 'src' por el nombre de la carpeta que contiene tu archivo pom.xml
+        run: cd C:\Users\jorge\OneDrive\Documentos\NetBeansProjects\test_netbeans_serverglassfish\pom.xml
 
       - name: Build with Maven
-        run: mvn clean install  # Ahora Maven debería ejecutarse en el directorio correcto
+        run: mvn clean install  
 
       - name: Run tests
         run: mvn test
