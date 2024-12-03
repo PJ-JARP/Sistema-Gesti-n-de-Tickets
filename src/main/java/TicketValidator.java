@@ -11,6 +11,6 @@ public class TicketValidator {
     // Validar la prioridad (puedes tener varias prioridades predefinidas)
     public static boolean validatePrioridad(String prioridad) {
         return prioridad != null && (prioridad.equals("Alta") || prioridad.equals("Media") || prioridad.equals("Baja"));
-    }//creación de comit
+    }
     
 }//finalización de clase.
