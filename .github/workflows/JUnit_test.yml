@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '22.0.2'  # Versión específica de Java
-          distribution: 'adoptium'  # Especificamos la distribución como 'adoptium'
+          distribution: 'temurin'  # Usamos 'temurin', que es la marca de OpenJDK por parte de Adoptium
           java-package: 'jdk'
           architecture: 'x64'
           check-latest: false
