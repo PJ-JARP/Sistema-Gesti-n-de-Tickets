@@ -12,6 +12,7 @@ public class Ticket {
         this.prioridad = prioridad;
     }
     
+   
     //comit1
     // Getters y Setters
     public String getId() {
