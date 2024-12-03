@@ -3,13 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Registro de Tickets</title>
+    <title>Gestión de Tickets</title>
+    <script>
+        // Función para cargar la lista de ingenieros
+        function cargarIngenieros() {
+            fetch("TicketServlet?action=getIngenieros")
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById("ingeniero");
+                    select.innerHTML = '<option value="" disabled selected>Seleccione un ingeniero</option>';
+                    data.forEach(ingeniero => {
+                        const option = document.createElement("option");
+                        option.value = ingeniero;
+                        option.textContent = ingeniero;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error("Error al cargar ingenieros:", error));
+        }
+
+        // Función para generar el folio y sincronizar con asignación
+        function generarFolio() {
+            const tipo = document.getElementById("tipo").value;
+            const idField = document.getElementById("id");
+
+            if (!tipo) {
+                console.error("Por favor, selecciona un tipo de ticket.");
+                return;
+            }
+
+            fetch(`TicketServlet?action=generateFolio&tipo=${tipo}`)
+                .then(response => response.text())
+                .then(data => {
+                    idField.value = data;
+                    document.getElementById("ticketId").value = data;
+                })
+                .catch(error => console.error("Error al generar el folio:", error));
+        }
+
+        // Función para sincronizar el ingeniero seleccionado con el campo "Asignado a"
+        function sincronizarIngeniero() {
+            const ingenieroSeleccionado = document.getElementById("ingeniero").value;
+            document.getElementById("asignadoA").value = ingenieroSeleccionado;
+        }
+
+        // Cargar ingenieros al cargar la página
+        document.addEventListener("DOMContentLoaded", cargarIngenieros);
+    </script>
 </head>
 <body style="background-color: #333333; font-family: Arial, sans-serif; color: #ffffff;">
 
-    <h1 style="text-align: center; color: #ffffff;">Formulario de Registro de Tickets</h1>
-    
-    <form action="TicketServlet" method="POST" style="background-color: #444444; border: 1px solid #555555; padding: 20px; width: 50%; margin: 0 auto; border-radius: 10px;">
+    <h1 style="text-align: center; color: #ffffff;">Gestión de Tickets</h1>
+
+    <!-- Formulario de Registro de Tickets -->
+    <form action="TicketServlet" method="POST" style="background-color: #444444; border: 1px solid #555555; padding: 20px; width: 50%; margin: 0 auto 30px; border-radius: 10px;">
+        <h2 style="text-align: center; color: #ffffff;">Formulario de Registro de Tickets</h2>
+        <input type="hidden" name="action" value="register">
         <table border="0" cellpadding="10" cellspacing="0" style="width: 100%; color: #ffffff;">
             <tr>
                 <td style="text-align: right; width: 30%;"><label for="tipo">Tipo de Ticket:</label></td>
@@ -55,7 +104,7 @@
             </tr>
             <tr>
                 <td style="text-align: right;"><label for="asignadoA">Asignado a:</label></td>
-                <td><input type="text" id="asignadoA" name="asignadoA" required style="width: 100%; padding: 10px; background-color: #555555; color: #ffffff; border: 1px solid #777777; border-radius: 5px;"></td>
+                <td><input type="text" id="asignadoA" name="asignadoA" readonly style="width: 100%; padding: 10px; background-color: #666666; color: #ffffff; border: 1px solid #777777; border-radius: 5px;"></td>
             </tr>
             <tr>
                 <td colspan="2" style="text-align: center;">
@@ -65,21 +114,30 @@
         </table>
     </form>
 
-    <script>
-        // Función para generar el folio automáticamente
-        function generarFolio() {
-            const tipo = document.getElementById("tipo").value;
-            const idField = document.getElementById("id");
-
-            // Llamar al backend para obtener el próximo folio
-            fetch("TicketServlet?tipo=" + tipo)
-                .then(response => response.text())
-                .then(data => {
-                    idField.value = data;
-                })
-                .catch(error => console.error("Error al generar el folio:", error));
-        }
-    </script>
+    <!-- Formulario de Asignación de Tickets -->
+    <form action="TicketServlet" method="POST" style="background-color: #444444; border: 1px solid #555555; padding: 20px; width: 50%; margin: 0 auto; border-radius: 10px;">
+        <h2 style="text-align: center; color: #ffffff;">Formulario de Asignación de Tickets</h2>
+        <input type="hidden" name="action" value="assign">
+        <table border="0" cellpadding="10" cellspacing="0" style="width: 100%; color: #ffffff;">
+            <tr>
+                <td style="text-align: right; width: 30%;"><label for="ticketId">ID del Ticket:</label></td>
+                <td style="width: 70%;"><input type="text" id="ticketId" name="ticketId" readonly style="width: 100%; padding: 10px; background-color: #666666; color: #ffffff; border: 1px solid #777777; border-radius: 5px;"></td>
+            </tr>
+            <tr>
+                <td style="text-align: right;"><label for="ingeniero">Asignar a:</label></td>
+                <td>
+                    <select id="ingeniero" name="ingeniero" onchange="sincronizarIngeniero()" required style="width: 100%; padding: 10px; background-color: #555555; color: #ffffff; border: 1px solid #777777; border-radius: 5px;">
+                        <option value="" disabled selected>Seleccione un ingeniero</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <input type="submit" value="Asignar Ticket" style="background-color: #007bff; color: #ffffff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                </td>
+            </tr>
+        </table>
+    </form>
 
 </body>
 </html>
