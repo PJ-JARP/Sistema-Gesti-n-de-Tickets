@@ -25,8 +25,11 @@ jobs:
           architecture: 'x64'
           check-latest: false
 
+      - name: Change directory to project folder
+        run: cd src  # Cambia 'src' por el nombre de la carpeta que contiene tu archivo pom.xml
+
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean install  # Ahora Maven debería ejecutarse en el directorio correcto
 
       - name: Run tests
         run: mvn test
