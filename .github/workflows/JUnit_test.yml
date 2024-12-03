@@ -22,11 +22,8 @@ jobs:
           java-version: '22.0.2'
           distribution: 'temurin'
 
-      - name: Change directory to the project folder
-        run: cd test_netbeans_serverglassfish  # Navegar a la carpeta de tu proyecto
-
       - name: Build with Maven
-        run: mvn clean install  # Ejecutar Maven en esa carpeta
+        run: mvn clean install  # Ejecutar Maven sin necesidad de cambiar de directorio
 
       - name: Run tests
-        run: mvn test  # Ejecutar las pruebas en esa carpeta
+        run: mvn test  # Ejecutar las pruebas en la raíz del repositorio
