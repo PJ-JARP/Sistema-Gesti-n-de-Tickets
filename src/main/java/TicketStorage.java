@@ -41,6 +41,7 @@ public class TicketStorage {
         return tickets;
     }
 
+   
     // Método para verificar si un ticket con el mismo ID ya existe
     public static boolean ticketExists(String id) {
         List<Ticket> tickets = loadTickets();
