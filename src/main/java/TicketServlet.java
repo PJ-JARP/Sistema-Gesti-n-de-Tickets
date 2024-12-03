@@ -1,9 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
-//importación de librerías
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,64 +5,86 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
+import com.google.gson.Gson;
 
 @WebServlet(urlPatterns = {"/TicketServlet"})
 public class TicketServlet extends HttpServlet {
-    private static final String FOLIO_FILE = "folio.txt";
-    private static final AtomicInteger folioCounter = new AtomicInteger(loadLastFolio());
 
-    // Cargar el último folio desde un archivo (folio.txt)
-    private static int loadLastFolio() {
-        File file = new File(FOLIO_FILE);
+    private static final List<String> INGENIEROS = Arrays.asList(
+        "ing. Jorge Roque",
+        "ing. Diana Mazariegos",
+        "ing. Daniel Martinez",
+        "ing. Felipe Cavazos",
+        "ing. Johan Arath"
+    );
 
-        // Verificar si el archivo existe
-        if (!file.exists()) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                // Crear el archivo y escribir el valor inicial 0
-                writer.write("0");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return 0; // Retornar 0 como valor inicial
-        }
+    private static final String ASIGNACIONES_FILE = "Asignaciones.txt";
 
-        // Leer el valor del archivo existente
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String lastFolio = reader.readLine();
-            return lastFolio != null ? Integer.parseInt(lastFolio) : 0;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return 0; // Si ocurre un error, retornar 0
-    }
+    private int folioCounterREQ = 1; // Contador para REQ
+    private int folioCounterINC = 1; // Contador para INC
 
-    // Guardar el último folio en un archivo (folio.txt)
-    private static void saveLastFolio(int folio) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FOLIO_FILE))) {
-            writer.write(String.valueOf(folio));
-        } catch (IOException e) {
-            e.printStackTrace();
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        if ("register".equalsIgnoreCase(action)) {
+            registerTicket(request, response);
+        } else if ("assign".equalsIgnoreCase(action)) {
+            assignTicket(request, response);
+        } else {
+            response.getWriter().println("Error: Acción no reconocida.");
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String tipo = request.getParameter("tipo");
-        if (tipo == null || (!tipo.equals("REQ") && !tipo.equals("INC"))) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Error: Tipo inválido.");
-            return;
-        }
+        String action = request.getParameter("action");
 
-        // Generar un folio provisional (no se incrementa aún)
-        int nextFolio = folioCounter.get(); 
-        String folioGenerado = tipo + String.format("%05d", nextFolio);
-        response.getWriter().write(folioGenerado);
+        if ("generateFolio".equalsIgnoreCase(action)) {
+            String tipo = request.getParameter("tipo");
+            if (tipo == null || tipo.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("Tipo de ticket no especificado.");
+                return;
+            }
+
+            // Generar folio según el tipo (REQ o INC)
+            String folio = generateFolio(tipo);
+            response.setContentType("text/plain");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(folio);
+
+        } else if ("getIngenieros".equalsIgnoreCase(action)) {
+            // Devuelve la lista de ingenieros como JSON
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            // Convertir la lista a JSON usando Gson
+            String json = new Gson().toJson(INGENIEROS);
+
+            // Escribir la respuesta
+            response.getWriter().write(json);
+        }
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private String generateFolio(String tipo) {
+        String folio;
+
+        synchronized (this) {
+            if ("REQ".equalsIgnoreCase(tipo)) {
+                folio = "REQ-" + String.format("%03d", folioCounterREQ++);
+            } else if ("INC".equalsIgnoreCase(tipo)) {
+                folio = "INC-" + String.format("%03d", folioCounterINC++);
+            } else {
+                folio = "UNK-000"; // Valor por defecto si el tipo no es válido
+            }
+        }
+
+        return folio;
+    }
+
+    private void registerTicket(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String id = request.getParameter("id");
         String descripcion = request.getParameter("descripcion");
         String prioridad = request.getParameter("prioridad");
@@ -76,33 +92,66 @@ public class TicketServlet extends HttpServlet {
         String categoria = request.getParameter("categoria");
         String asignadoA = request.getParameter("asignadoA");
 
-        // Validaciones
-        if (TicketValidator.validateId(id) && TicketValidator.validateDescripcion(descripcion)
-                && TicketValidator.validatePrioridad(prioridad) && TicketValidator.validateEstado(estado)
-                && TicketValidator.validateCategoria(categoria) && TicketValidator.validateAsignadoA(asignadoA)) {
+        // Validaciones básicas
+        if (id == null || descripcion == null || prioridad == null || estado == null || categoria == null || asignadoA == null) {
+            response.getWriter().println("Error: Todos los campos son obligatorios.");
+            return;
+        }
 
-            if (TicketStorage.ticketExists(id)) {
-                response.getWriter().println("Error: El ticket con el ID proporcionado ya existe.");
-                return;
+        // Guardar el ticket en el archivo CSV
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("tickets.csv", true))) {
+            writer.write(String.join(",", id, descripcion, prioridad, estado, categoria, asignadoA));
+            writer.newLine();
+        }
+
+        response.getWriter().println("Ticket registrado exitosamente.");
+    }
+
+    private void assignTicket(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String ticketId = request.getParameter("ticketId");
+        String ingeniero = request.getParameter("ingeniero");
+
+        // Validaciones básicas
+        if (ticketId == null || ticketId.trim().isEmpty()) {
+            response.getWriter().println("Error: ID del ticket no puede estar vacío.");
+            return;
+        }
+        if (ingeniero == null || ingeniero.trim().isEmpty()) {
+            response.getWriter().println("Error: Debe seleccionar un ingeniero.");
+            return;
+        }
+
+        // Verificar asignación duplicada
+        if (isTicketAlreadyAssigned(ticketId)) {
+            response.getWriter().println("Error: El ticket ya está asignado a un ingeniero.");
+            return;
+        }
+
+        // Guardar asignación
+        saveAssignment(ticketId, ingeniero);
+
+        response.getWriter().println("Ticket asignado exitosamente a " + ingeniero);
+    }
+
+    private boolean isTicketAlreadyAssigned(String ticketId) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(ASIGNACIONES_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts[0].equals(ticketId)) {
+                    return true; // Ticket ya asignado
+                }
             }
+        } catch (IOException e) {
+            // Archivo no encontrado o error de lectura
+        }
+        return false;
+    }
 
-            // Crear el ticket
-            String fechaCreacion = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
-            Ticket ticket = new Ticket(id, descripcion, fechaCreacion, prioridad, estado, categoria, asignadoA);
-
-            // Guardar el ticket
-            TicketStorage.saveTicket(ticket);
-
-            // Incrementar el contador y guardar el nuevo folio
-            int nextFolio = folioCounter.incrementAndGet();
-            saveLastFolio(nextFolio);
-
-            response.getWriter().println("Ticket registrado exitosamente con ID: " + id);
-        } else {
-            response.getWriter().println("Error: Validación fallida. Asegúrate de que todos los campos sean correctos.");
+    private void saveAssignment(String ticketId, String ingeniero) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ASIGNACIONES_FILE, true))) {
+            writer.write(ticketId + "," + ingeniero);
+            writer.newLine();
         }
     }
 }
-
-
-
