@@ -41,6 +41,7 @@ public class TicketServlet extends HttpServlet {
             if (TicketStorage.ticketExists(id)) {
                 response.getWriter().println("Error: El ticket con el ID proporcionado ya existe.");
                 System.out.println("revisión de comit");
+                System.out.println("revisión de segundo comit");
                 return;
             }
    // Crear un nuevo ticket
