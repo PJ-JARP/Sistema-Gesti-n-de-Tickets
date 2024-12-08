@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Gestión de Tickets</title>
+</head>
+<body style="background-color: #333; color: #fff; font-family: Arial, sans-serif;">
+    <h1 style="text-align: center; margin-top: 20px;">Dashboard de Tickets</h1>
+    <div style="width: 80%; margin: 0 auto; padding: 20px; background-color: #444; border-radius: 10px;">
+        <h2>Métricas Principales</h2>
+        <ul id="metrics" style="list-style-type: none; padding: 0;">
+            <!-- Métricas llenadas dinámicamente -->
+        </ul>
+        <h2>Actividad Reciente</h2>
+        <ul id="recent-activity" style="list-style-type: none; padding: 0;">
+            <!-- Actividad reciente llenada dinámicamente -->
+        </ul>
+    </div>
+    <script>
+        // Cargar métricas y actividad reciente desde el backend
+        async function loadDashboard() {
+            try {
+                const metricsResponse = await fetch("DashboardServlet?action=metrics");
+                const metrics = await metricsResponse.json();
+
+                const metricsList = document.getElementById("metrics");
+                metricsList.innerHTML = `
+                    <li>Tickets Abiertos: ${metrics.open}</li>
+                    <li>Tickets en Progreso: ${metrics.inProgress}</li>
+                    <li>Tickets Cerrados: ${metrics.closed}</li>
+                `;
+
+                const activityResponse = await fetch("DashboardServlet?action=recent-activity");
+                const activities = await activityResponse.json();
+
+                const activityList = document.getElementById("recent-activity");
+                activityList.innerHTML = activities.map(activity => `<li>${activity}</li>`).join("");
+            } catch (error) {
+                console.error("Error al cargar el dashboard:", error);
+            }
+        }
+
+        window.onload = loadDashboard;
+    </script>
+</body>
+</html>
