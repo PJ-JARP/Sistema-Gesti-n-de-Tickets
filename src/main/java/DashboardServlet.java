@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -38,7 +39,7 @@ public class DashboardServlet extends HttpServlet {
             response.getWriter().write(new com.google.gson.Gson().toJson(metrics));
         } else if ("recent-activity".equalsIgnoreCase(action)) {
             // Obtener actividad reciente
-            List<String> activity = TicketHistory.getRecentActivity();
+            List<String> activity = TicketStorage.getRecentActivity();
             response.getWriter().write(new com.google.gson.Gson().toJson(activity));
         } else {
             response.getWriter().write("{\"error\":\"Acción no válida\"}");

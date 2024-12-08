@@ -3,14 +3,14 @@ import java.util.*;
 
 public class TicketStorage {
     // Archivo CSV donde se almacenarán los tickets
-    private static final String FILE_NAME = "C:/Users/jorge/OneDrive/Escritorio/CSV out/tickets.csv";
+    private static final String FILE_NAME = "\"C:\\Users\\jorge\\OneDrive\\Escritorio\\CSV out\\tickets.csv\"";
 
     // Método para verificar si un ticket ya existe
     public static boolean ticketExists(String id) {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
+                String[] values = line.split("\t"); // Separador: tabulaciones (\t)
                 if (values[0].equals(id)) {
                     return true;
                 }
@@ -24,7 +24,7 @@ public class TicketStorage {
     // Método para guardar un ticket en el archivo CSV
     public static void saveTicket(Ticket ticket) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
-            bw.write(ticket.toCSV());
+            bw.write(ticket.toCSV()); // toCSV debe usar '\t' como separador
             bw.newLine();
         } catch (IOException e) {
             e.printStackTrace();
@@ -37,8 +37,8 @@ public class TicketStorage {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(","); // Asume que el estado está en la columna 4
-                if (parts.length > 3 && parts[3].trim().equalsIgnoreCase(status)) {
+                String[] parts = line.split("\t"); // Separador: tabulaciones (\t)
+                if (parts.length > 4 && parts[4].trim().equalsIgnoreCase(status)) {
                     count++;
                 }
             }
