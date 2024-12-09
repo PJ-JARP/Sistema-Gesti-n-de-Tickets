@@ -56,6 +56,21 @@
             background-color: #555555;
             border-radius: 5px;
         }
+        
+        .button {
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 
@@ -77,9 +92,17 @@
         <ul id="recent-activity">
             <!-- Actividad reciente llenada dinámicamente -->
         </ul>
+        
+    <button class="button" onclick="downloadCSV()">Descargar Reporte CSV</button>
     </div>
 
     <script>
+    //función para descargar los tickets.     
+    function downloadCSV() {
+            // Navega a la URL del servlet
+            window.location.href = "ReportServlet";
+        }
+        
         // Cargar métricas y actividad reciente desde el backend 
         //funcion deshabilitada <li>Tickets Cerrados: ${metrics.closed}</li> 
         
