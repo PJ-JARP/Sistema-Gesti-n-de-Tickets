@@ -24,7 +24,7 @@
         }
 
         // Función para generar el folio y sincronizar con asignación
-        function generarFolio() {
+       function generarFolio() {
             const tipo = document.getElementById("tipo").value;
             const idField = document.getElementById("id");
 
@@ -42,11 +42,13 @@
                 .catch(error => console.error("Error al generar el folio:", error));
         }
 
+
         // Función para sincronizar el ingeniero seleccionado con el campo "Asignado a"
-        function sincronizarIngeniero() {
+         function sincronizarIngeniero() {
             const ingenieroSeleccionado = document.getElementById("ingeniero").value;
             document.getElementById("asignadoA").value = ingenieroSeleccionado;
         }
+
 
         // Actualización de las funciones de registro y asignación
         //document.addEventListener("DOMContentLoaded", cargarIngenieros);
@@ -63,13 +65,13 @@
                 body: formData,
             });
 
-            const result = await response.json();
+             const result = await response.json();
 
             if (result.status === "success") {
-                alert(result.message); // Mensaje de éxito
-                form.reset(); // Limpiar formulario
+                alert(result.message);
+                form.reset();
             } else {
-                alert(result.message); // Mensaje de error
+                alert(result.message);
             }
         }
             
@@ -88,10 +90,10 @@
             const result = await response.json();
 
             if (result.status === "success") {
-                alert(result.message); // Mensaje de éxito
-                form.reset(); // Limpiar formulario
+                alert(result.message);
+                form.reset();
             } else {
-                alert(result.message); // Mensaje de error
+                alert(result.message);
             }
         }
 
@@ -185,13 +187,13 @@
     <h1>Gestión de Tickets</h1>
 
      <!-- Formulario de Registro de Tickets -->
-     <form id="register-form" method="POST">
+      <form id="register-form" method="POST">
         <h2>Formulario de Registro de Tickets</h2>
         <input type="hidden" name="action" value="register">
         <table>
             <tr>
                 <td><label for="tipo">Tipo de Ticket:</label></td>
-                 <td>
+                <td>
                     <select id="tipo" name="tipo" onchange="generarFolio()" required>
                         <option value="" disabled selected>Selecciona una opción</option>
                         <option value="REQ">Requerimiento</option>
@@ -207,7 +209,7 @@
                 <td><label for="descripcion">Descripción:</label></td>
                 <td><input type="text" id="descripcion" name="descripcion" required></td>
             </tr>
-             <tr>
+            <tr>
                 <td><label for="prioridad">Prioridad:</label></td>
                 <td>
                     <select id="prioridad" name="prioridad" required>
@@ -244,7 +246,7 @@
     </form>
 
       <!-- Formulario de Asignación de Tickets -->
-     <form id="assign-form" method="POST">
+       <form id="assign-form" method="POST">
         <h2>Formulario de Asignación de Tickets</h2>
         <input type="hidden" name="action" value="assign">
         <table>
