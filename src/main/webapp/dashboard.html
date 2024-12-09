@@ -79,7 +79,9 @@
     </div>
 
     <script>
-        // Cargar métricas y actividad reciente desde el backend
+        // Cargar métricas y actividad reciente desde el backend 
+        //funcion deshabilitada <li>Tickets Cerrados: ${metrics.closed}</li> 
+        
         async function loadDashboard() {
             try {
                 // Solicitud para obtener métricas
@@ -91,7 +93,7 @@
                 metricsList.innerHTML = `
                     <li>Tickets Abiertos: ${metrics.open}</li>
                     <li>Tickets en Progreso: ${metrics.inProgress}</li>
-                    <li>Tickets Cerrados: ${metrics.closed}</li>
+                 
                 `;
 
                 // Solicitud para obtener actividad reciente
