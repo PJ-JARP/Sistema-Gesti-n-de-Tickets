@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Tickets</title>
+    
     <script>
         // Función para cargar la lista de ingenieros
         function cargarIngenieros() {
@@ -23,14 +24,15 @@
         }
 
         // Función para generar el folio y sincronizar con asignación
-         function generarFolio() {
+          function generarFolio() {
             const tipo = document.getElementById("tipo").value;
             const idField = document.getElementById("id");
 
-            if (!tipo) {
-                console.error("Por favor, selecciona un tipo de ticket.");
+             if (!tipo) {
+                alert("Por favor, selecciona un tipo de ticket antes de generar el folio.");
                 return;
             }
+
 
             fetch(`TicketServlet?action=generateFolio&tipo=${tipo}`)
                 .then(response => response.text())
@@ -51,22 +53,46 @@
         // Cargar ingenieros al cargar la página
         document.addEventListener("DOMContentLoaded", cargarIngenieros);
     </script>
+    
     <style>
-      body {
+        body {
             font-family: Arial, sans-serif;
             background-color: #333333;
             color: #ffffff;
+            margin: 0;
+            padding: 0;
         }
         h1 {
             text-align: center;
             color: #ffffff;
+        }
+        nav {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #444444;
+        }
+        nav a {
+            text-decoration: none;
+            margin: 0 15px;
+        }
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .nav-button:hover {
+            background-color: #0056b3;
         }
         form {
             background-color: #444444;
             border: 1px solid #555555;
             padding: 20px;
             width: 50%;
-            margin: 0 auto 30px;
+            margin: 20px auto;
             border-radius: 10px;
         }
         table {
@@ -98,9 +124,9 @@
 <body>
 
      <!-- Navigation Bar -->
-    <nav>
-        <a href="index.html">Gestión de Tickets</a> |
-        <a href="dashboard.html">Dashboard</a>
+     <nav>
+        <a href="index.html"><button class="nav-button">Gestión de Tickets</button></a>
+        <a href="dashboard.html"><button class="nav-button">Dashboard</button></a>
     </nav>
      
  <h1>Gestión de Tickets</h1>
