@@ -25,7 +25,7 @@ public class TicketStorage {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] values = line.split("\t");
+                String[] values = line.split(","); //se hizo el cambio de tabulación.
                 if (values.length >= 7) {
                     Ticket ticket = new Ticket(
                         values[0], // ID
@@ -61,9 +61,17 @@ public class TicketStorage {
 
     // Guardar un nuevo ticket
     public static void saveTicket(Ticket ticket) {
-        List<Ticket> tickets = readAllTickets();
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+            bw.write(ticket.toCSV()); // Ahora usa comas
+            bw.newLine();
+        } catch (IOException e) {
+            System.err.println("Error al guardar el ticket: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        /*List<Ticket> tickets = readAllTickets();
         tickets.add(ticket); // Agregar el nuevo ticket
-        writeAllTickets(tickets); // Guardar toda la lista
+        writeAllTickets(tickets); // Guardar toda la lista*/
     }
 
     // Verificar si un ticket ya existe
@@ -79,7 +87,7 @@ public class TicketStorage {
     }
 
     // Obtener las últimas 5 actividades
-    public static List<String> getRecentActivity() {
+    /*public static List<String> getRecentActivity() {
         List<Ticket> tickets = readAllTickets();
         int start = Math.max(0, tickets.size() - 5);
         List<String> recentActivities = new ArrayList<>();
@@ -87,9 +95,53 @@ public class TicketStorage {
             recentActivities.add(ticket.toCSV());
         }
         return recentActivities;
-    }
+    }*/
 
     static boolean isTicketAlreadyAssigned(String ticketId) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    static Map<String, Integer> getMetrics() {
+         ensureFileExists(); // Asegura que el archivo exista
+    Map<String, Integer> metrics = new HashMap<>();
+    metrics.put("Abiertos", 0);
+    metrics.put("En Progreso", 0);
+    metrics.put("Cerrados", 0);
+
+     try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(","); 
+            if (parts.length > 4) {
+                String estado = parts[4].trim();
+                metrics.put(estado, metrics.getOrDefault(estado, 0) + 1);
+            }
+        }
+    } catch (IOException e) {
+        System.err.println("Error al leer el archivo para métricas: " + e.getMessage());
+    }
+
+    return metrics;
+}
+
+    public static List<String> getRecentActivity() {
+    ensureFileExists(); // Asegura que el archivo exista
+    List<String> recentActivities = new ArrayList<>();
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+        List<String> allLines = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            allLines.add(line);
+        }
+
+        // Toma las últimas 5 líneas como actividad reciente
+        int start = Math.max(0, allLines.size() - 5);
+        recentActivities = allLines.subList(start, allLines.size());
+    } catch (IOException e) {
+        System.err.println("Error al leer el archivo para actividad reciente: " + e.getMessage());
+    }
+
+    return recentActivities;
     }
 }

@@ -80,6 +80,6 @@ public class Ticket {
 
      // Método para convertir el ticket a formato CSV
     public String toCSV() {
-        return id + "\t" + descripcion + "\t" + fechaCreacion + "\t" + prioridad + "\t" + estado + "\t" + categoria + "\t" + asignadoA;
+        return id + "," + descripcion + "," + fechaCreacion + "," + prioridad + "," + estado + "," + categoria + "," + asignadoA;
     }
 }
