@@ -172,7 +172,7 @@
                     <select id="estado" name="estado" required>
                         <option value="Abierto">Abierto</option>
                         <option value="En Progreso">En Progreso</option>
-                        <option value="Resuelto">Resuelto</option>
+                        <!--<option value="Resuelto">Resuelto</option>-->
                     </select>
                 </td>
             </tr>
@@ -205,15 +205,15 @@
                 <td><label for="ingeniero">Asignar a:</label></td>
                 <td>
                     <select id="ingeniero" name="ingeniero" onchange="sincronizarIngeniero()" required>
-                        <option value="" disabled selected>Seleccione un ingeniero</option>
+                        <option value="" disabled selected>Seleccione un ingeniero de la lista: </option>
                     </select>
                 </td>
             </tr>
-            <tr>
+           <!-- <tr>
                 <td colspan="2" style="text-align: center;">
                     <input type="submit" value="Asignar Ticket" class="button">
                 </td>
-            </tr>
+            </tr>-->
         </table>
     </form>
 
