@@ -18,7 +18,11 @@ public class TicketServlet extends HttpServlet {
         "ing. Felipe Cavazos",
         "ing. Johan Arath",
         "ing. Garzon Gonzalez",
-        "ing. Silvia Elodia"
+        "ing. Silvia Elodia",
+        "ing. Javier Ramírez",
+        "ing. Miguel Ángel Pérez",
+        "ing. Luis Fernando López",
+        "ing. Carlos Alberto Sánchez"
     );
 
     private static final String ASIGNACIONES_FILE = "Asignaciones.txt";
