@@ -6,7 +6,7 @@
     <title>Gestión de Tickets</title>
     
     <script>
-        // Función para cargar la lista de ingenieros
+          // Función para cargar la lista de ingenieros
         function cargarIngenieros() {
             fetch("TicketServlet?action=getIngenieros")
                 .then(response => response.json())
@@ -24,15 +24,14 @@
         }
 
         // Función para generar el folio y sincronizar con asignación
-          function generarFolio() {
+        function generarFolio() {
             const tipo = document.getElementById("tipo").value;
             const idField = document.getElementById("id");
 
-             if (!tipo) {
+            if (!tipo) {
                 alert("Por favor, selecciona un tipo de ticket antes de generar el folio.");
                 return;
             }
-
 
             fetch(`TicketServlet?action=generateFolio&tipo=${tipo}`)
                 .then(response => response.text())
@@ -44,68 +43,67 @@
         }
 
         // Función para sincronizar el ingeniero seleccionado con el campo "Asignado a"
-          function sincronizarIngeniero() {
+        function sincronizarIngeniero() {
             const ingenieroSeleccionado = document.getElementById("ingeniero").value;
             document.getElementById("asignadoA").value = ingenieroSeleccionado;
         }
 
+        // Actualización de las funciones de registro y asignación
+        //document.addEventListener("DOMContentLoaded", cargarIngenieros);
         
-        // Cargar ingenieros al cargar la página
-        document.addEventListener("DOMContentLoaded", cargarIngenieros);
-        
-         async function registrarTicket(event) {
-        event.preventDefault(); // Evitar el comportamiento por defecto del formulario
+        // Función para manejar el registro de tickets
+        async function registrarTicket(event) {
+            event.preventDefault();
 
-        const form = event.target;
-        const formData = new FormData(form);
-        const response = await fetch("TicketServlet", {
-            method: "POST",
-            body: formData
-        });
+            const form = event.target;
+            const formData = new FormData(form);
 
-        const result = await response.json();
+            const response = await fetch("TicketServlet", {
+                method: "POST",
+                body: formData,
+            });
 
-        const messageBox = document.getElementById("message-box");
-        if (result.status === "success") {
-            messageBox.textContent = result.message;
-            messageBox.style.color = "green";
-            form.reset(); // Limpiar el formulario después de un registro exitoso
-        } else {
-            messageBox.textContent = result.message;
-            messageBox.style.color = "red";
+            const result = await response.json();
+
+            if (result.status === "success") {
+                alert(result.message); // Mensaje de éxito
+                form.reset(); // Limpiar formulario
+            } else {
+                alert(result.message); // Mensaje de error
+            }
         }
-    }
+            
+        // Función para manejar la asignación de tickets
+        async function asignarTicket(event) {
+            event.preventDefault();
 
-    async function asignarTicket(event) {
-        event.preventDefault(); // Evitar el comportamiento por defecto del formulario
+            const form = event.target;
+            const formData = new FormData(form);
 
-        const form = event.target;
-        const formData = new FormData(form);
-        const response = await fetch("TicketServlet", {
-            method: "POST",
-            body: formData
-        });
+            const response = await fetch("TicketServlet", {
+                method: "POST",
+                body: formData,
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        const messageBox = document.getElementById("assign-message-box");
-        if (result.status === "success") {
-            messageBox.textContent = result.message;
-            messageBox.style.color = "green";
-            form.reset(); // Limpiar el formulario después de una asignación exitosa
-        } else {
-            messageBox.textContent = result.message;
-            messageBox.style.color = "red";
+            if (result.status === "success") {
+                alert(result.message); // Mensaje de éxito
+                form.reset(); // Limpiar formulario
+            } else {
+                alert(result.message); // Mensaje de error
+            }
         }
-    }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("register-form").addEventListener("submit", registrarTicket);
-        document.getElementById("assign-form").addEventListener("submit", asignarTicket);
-    });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            cargarIngenieros();
+            document.getElementById("register-form").addEventListener("submit", registrarTicket);
+            document.getElementById("assign-form").addEventListener("submit", asignarTicket);
+        });
     </script>
     
-    <style>
+     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #333333;
@@ -171,25 +169,29 @@
             background-color: #0056b3;
         }
     </style>
+    
 </head>
+
 <body>
 
-     <!-- Navigation Bar -->
-     <nav>
+      <!-- Menú de navegación entre las interfaces actuales.  -->
+    <nav>
         <a href="index.html"><button class="nav-button">Gestión de Tickets</button></a>
         <a href="dashboard.html"><button class="nav-button">Dashboard</button></a>
     </nav>
-     
- <h1>Gestión de Tickets</h1>
+
+
+    
+    <h1>Gestión de Tickets</h1>
 
      <!-- Formulario de Registro de Tickets -->
-    <form action="TicketServlet" method="POST">
+     <form id="register-form" method="POST">
         <h2>Formulario de Registro de Tickets</h2>
         <input type="hidden" name="action" value="register">
         <table>
             <tr>
                 <td><label for="tipo">Tipo de Ticket:</label></td>
-                <td>
+                 <td>
                     <select id="tipo" name="tipo" onchange="generarFolio()" required>
                         <option value="" disabled selected>Selecciona una opción</option>
                         <option value="REQ">Requerimiento</option>
@@ -205,7 +207,7 @@
                 <td><label for="descripcion">Descripción:</label></td>
                 <td><input type="text" id="descripcion" name="descripcion" required></td>
             </tr>
-            <tr>
+             <tr>
                 <td><label for="prioridad">Prioridad:</label></td>
                 <td>
                     <select id="prioridad" name="prioridad" required>
@@ -241,8 +243,8 @@
         </table>
     </form>
 
-    <!-- Formulario de Asignación de Tickets -->
-    <form action="TicketServlet" method="POST">
+      <!-- Formulario de Asignación de Tickets -->
+     <form id="assign-form" method="POST">
         <h2>Formulario de Asignación de Tickets</h2>
         <input type="hidden" name="action" value="assign">
         <table>
@@ -265,8 +267,5 @@
             </tr>
         </table>
     </form>
-
-
-
 </body>
 </html>
