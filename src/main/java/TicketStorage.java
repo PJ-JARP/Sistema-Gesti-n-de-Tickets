@@ -88,4 +88,8 @@ public class TicketStorage {
         }
         return recentActivities;
     }
+
+    static boolean isTicketAlreadyAssigned(String ticketId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
