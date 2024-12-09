@@ -12,13 +12,25 @@ import com.google.gson.Gson;
 public class TicketServlet extends HttpServlet {
 
     private static final List<String> INGENIEROS = Arrays.asList(
-        "ing. Jorge Roque",
-        "ing. Diana Mazariegos",
-        "ing. Daniel Martinez",
-        "ing. Felipe Cavazos",
-        "ing. Johan Arath",
-        "ing. Garzon Gonzalez",
-        "ing. Silvia Elodia"
+        "ing. Jorge Roque Piña",
+        "ing. Diana Mazariegos Morales",
+        "ing. Daniel Martinez Martinez",
+        "ing. Felipe Cavazos Rodrigues",
+        "ing. Johan Arath Morenos",
+        "ing. Garzon Gonzales",
+        "ing. Silvia Elodia Peña",
+        "ing. Javier Ramírez",
+        "ing. Miguel Ángel Pérez",
+        "ing. Luis Fernando López",
+        "ing. Carlos Alberto Sánchez",
+        "ing. Rodrigo Alejandro Hernández",
+        "ing. Esteban Manuel Gutiérrez",
+        "ing. David Antonio Rodríguez",
+        "ing. Alejandro José García",
+        "ing. Marco Antonio Martínez",
+        "ing. Juan Pablo Jiménez",
+        "ing. María Fernanda Castro",
+        "ing. Laura Isabel Morales"
     );
 
     private static final String ASIGNACIONES_FILE = "Asignaciones.txt";
@@ -30,12 +42,15 @@ public class TicketServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
         if ("register".equalsIgnoreCase(action)) {
             registerTicket(request, response);
         } else if ("assign".equalsIgnoreCase(action)) {
             assignTicket(request, response);
         } else {
-            response.getWriter().println("Error: Acción no reconocida.");
+            response.getWriter().write("{\"status\":\"error\", \"message\":\"Acción no reconocida.\"}");
         }
     }
 
@@ -144,22 +159,22 @@ public class TicketServlet extends HttpServlet {
     String asignadoA = request.getParameter("asignadoA");
 
     // Validaciones básicas
-    if (id == null || descripcion == null || prioridad == null || estado == null || categoria == null || asignadoA == null) {
-        response.getWriter().println("Error: Todos los campos son obligatorios.");
+      if (id == null || descripcion == null || prioridad == null || estado == null || categoria == null || asignadoA == null) {
+        response.getWriter().write("{\"status\":\"error\", \"message\":\"Todos los campos son obligatorios.\"}");
         return;
     }
 
     // Verificar duplicados
-    if (TicketStorage.ticketExists(id)) {
-        response.getWriter().println("Error: Ya existe un ticket con ese ID.");
+     if (TicketStorage.ticketExists(id)) {
+        response.getWriter().write("{\"status\":\"error\", \"message\":\"El ID del ticket ya existe.\"}");
         return;
     }
 
     // Crear el ticket y guardarlo
-    Ticket ticket = new Ticket(id, descripcion, new Date().toString(), prioridad, estado, categoria, asignadoA);
+     Ticket ticket = new Ticket(id, descripcion, new Date().toString(), prioridad, estado, categoria, asignadoA);
     TicketStorage.saveTicket(ticket);
 
-    response.getWriter().println("Ticket registrado exitosamente.");
+    response.getWriter().write("{\"status\":\"success\", \"message\":\"Ticket registrado exitosamente.\"}");
 }
 
 }

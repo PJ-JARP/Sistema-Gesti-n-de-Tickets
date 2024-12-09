@@ -52,6 +52,57 @@
         
         // Cargar ingenieros al cargar la página
         document.addEventListener("DOMContentLoaded", cargarIngenieros);
+        
+         async function registrarTicket(event) {
+        event.preventDefault(); // Evitar el comportamiento por defecto del formulario
+
+        const form = event.target;
+        const formData = new FormData(form);
+        const response = await fetch("TicketServlet", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        const messageBox = document.getElementById("message-box");
+        if (result.status === "success") {
+            messageBox.textContent = result.message;
+            messageBox.style.color = "green";
+            form.reset(); // Limpiar el formulario después de un registro exitoso
+        } else {
+            messageBox.textContent = result.message;
+            messageBox.style.color = "red";
+        }
+    }
+
+    async function asignarTicket(event) {
+        event.preventDefault(); // Evitar el comportamiento por defecto del formulario
+
+        const form = event.target;
+        const formData = new FormData(form);
+        const response = await fetch("TicketServlet", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        const messageBox = document.getElementById("assign-message-box");
+        if (result.status === "success") {
+            messageBox.textContent = result.message;
+            messageBox.style.color = "green";
+            form.reset(); // Limpiar el formulario después de una asignación exitosa
+        } else {
+            messageBox.textContent = result.message;
+            messageBox.style.color = "red";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("register-form").addEventListener("submit", registrarTicket);
+        document.getElementById("assign-form").addEventListener("submit", asignarTicket);
+    });
     </script>
     
     <style>
