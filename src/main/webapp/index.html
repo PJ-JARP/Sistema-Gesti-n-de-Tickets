@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Tickets</title>
+    
     <script>
         // Función para cargar la lista de ingenieros
         function cargarIngenieros() {
@@ -23,14 +24,15 @@
         }
 
         // Función para generar el folio y sincronizar con asignación
-        function generarFolio() {
+          function generarFolio() {
             const tipo = document.getElementById("tipo").value;
             const idField = document.getElementById("id");
 
-            if (!tipo) {
-                console.error("Por favor, selecciona un tipo de ticket.");
+             if (!tipo) {
+                alert("Por favor, selecciona un tipo de ticket antes de generar el folio.");
                 return;
             }
+
 
             fetch(`TicketServlet?action=generateFolio&tipo=${tipo}`)
                 .then(response => response.text())
@@ -42,28 +44,102 @@
         }
 
         // Función para sincronizar el ingeniero seleccionado con el campo "Asignado a"
-        function sincronizarIngeniero() {
+          function sincronizarIngeniero() {
             const ingenieroSeleccionado = document.getElementById("ingeniero").value;
             document.getElementById("asignadoA").value = ingenieroSeleccionado;
         }
 
+        
         // Cargar ingenieros al cargar la página
         document.addEventListener("DOMContentLoaded", cargarIngenieros);
     </script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333333;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+        }
+        nav {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #444444;
+        }
+        nav a {
+            text-decoration: none;
+            margin: 0 15px;
+        }
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .nav-button:hover {
+            background-color: #0056b3;
+        }
+        form {
+            background-color: #444444;
+            border: 1px solid #555555;
+            padding: 20px;
+            width: 50%;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
+            color: #ffffff;
+        }
+        table input, table select {
+            width: 100%;
+            padding: 10px;
+            background-color: #555555;
+            color: #ffffff;
+            border: 1px solid #777777;
+            border-radius: 5px;
+        }
+        .button {
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
-<body style="background-color: #333333; font-family: Arial, sans-serif; color: #ffffff;">
+<body>
 
-    <h1 style="text-align: center; color: #ffffff;">Gestión de Tickets</h1>
+     <!-- Navigation Bar -->
+     <nav>
+        <a href="index.html"><button class="nav-button">Gestión de Tickets</button></a>
+        <a href="dashboard.html"><button class="nav-button">Dashboard</button></a>
+    </nav>
+     
+ <h1>Gestión de Tickets</h1>
 
-    <!-- Formulario de Registro de Tickets -->
-    <form action="TicketServlet" method="POST" style="background-color: #444444; border: 1px solid #555555; padding: 20px; width: 50%; margin: 0 auto 30px; border-radius: 10px;">
-        <h2 style="text-align: center; color: #ffffff;">Formulario de Registro de Tickets</h2>
+     <!-- Formulario de Registro de Tickets -->
+    <form action="TicketServlet" method="POST">
+        <h2>Formulario de Registro de Tickets</h2>
         <input type="hidden" name="action" value="register">
-        <table border="0" cellpadding="10" cellspacing="0" style="width: 100%; color: #ffffff;">
+        <table>
             <tr>
-                <td style="text-align: right; width: 30%;"><label for="tipo">Tipo de Ticket:</label></td>
-                <td style="width: 70%;">
-                    <select id="tipo" name="tipo" onchange="generarFolio()" required style="width: 100%; padding: 10px; background-color: #555555; color: #ffffff; border: 1px solid #777777; border-radius: 5px;">
+                <td><label for="tipo">Tipo de Ticket:</label></td>
+                <td>
+                    <select id="tipo" name="tipo" onchange="generarFolio()" required>
                         <option value="" disabled selected>Selecciona una opción</option>
                         <option value="REQ">Requerimiento</option>
                         <option value="INC">Incidencia</option>
@@ -71,17 +147,17 @@
                 </td>
             </tr>
             <tr>
-                <td style="text-align: right;"><label for="id">ID del Ticket:</label></td>
-                <td><input type="text" id="id" name="id" readonly style="width: 100%; padding: 10px; background-color: #666666; color: #ffffff; border: 1px solid #777777; border-radius: 5px;"></td>
+                <td><label for="id">ID del Ticket:</label></td>
+                <td><input type="text" id="id" name="id" readonly></td>
             </tr>
             <tr>
-                <td style="text-align: right;"><label for="descripcion">Descripción:</label></td>
-                <td><input type="text" id="descripcion" name="descripcion" required style="width: 100%; padding: 10px; background-color: #555555; color: #ffffff; border: 1px solid #777777; border-radius: 5px;"></td>
+                <td><label for="descripcion">Descripción:</label></td>
+                <td><input type="text" id="descripcion" name="descripcion" required></td>
             </tr>
             <tr>
-                <td style="text-align: right;"><label for="prioridad">Prioridad:</label></td>
+                <td><label for="prioridad">Prioridad:</label></td>
                 <td>
-                    <select id="prioridad" name="prioridad" required style="width: 100%; padding: 10px; background-color: #555555; color: #ffffff; border: 1px solid #777777; border-radius: 5px;">
+                    <select id="prioridad" name="prioridad" required>
                         <option value="Alta">Alta</option>
                         <option value="Media">Media</option>
                         <option value="Baja">Baja</option>
@@ -89,9 +165,9 @@
                 </td>
             </tr>
             <tr>
-                <td style="text-align: right;"><label for="estado">Estado:</label></td>
+                <td><label for="estado">Estado:</label></td>
                 <td>
-                    <select id="estado" name="estado" required style="width: 100%; padding: 10px; background-color: #555555; color: #ffffff; border: 1px solid #777777; border-radius: 5px;">
+                    <select id="estado" name="estado" required>
                         <option value="Abierto">Abierto</option>
                         <option value="En Progreso">En Progreso</option>
                         <option value="Resuelto">Resuelto</option>
@@ -99,45 +175,47 @@
                 </td>
             </tr>
             <tr>
-                <td style="text-align: right;"><label for="categoria">Categoría:</label></td>
-                <td><input type="text" id="categoria" name="categoria" required style="width: 100%; padding: 10px; background-color: #555555; color: #ffffff; border: 1px solid #777777; border-radius: 5px;"></td>
+                <td><label for="categoria">Categoría:</label></td>
+                <td><input type="text" id="categoria" name="categoria" required></td>
             </tr>
             <tr>
-                <td style="text-align: right;"><label for="asignadoA">Asignado a:</label></td>
-                <td><input type="text" id="asignadoA" name="asignadoA" readonly style="width: 100%; padding: 10px; background-color: #666666; color: #ffffff; border: 1px solid #777777; border-radius: 5px;"></td>
+                <td><label for="asignadoA">Asignado a:</label></td>
+                <td><input type="text" id="asignadoA" name="asignadoA" readonly></td>
             </tr>
             <tr>
                 <td colspan="2" style="text-align: center;">
-                    <input type="submit" value="Registrar Ticket" style="background-color: #007bff; color: #ffffff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                    <input type="submit" value="Registrar Ticket" class="button">
                 </td>
             </tr>
         </table>
     </form>
 
     <!-- Formulario de Asignación de Tickets -->
-    <form action="TicketServlet" method="POST" style="background-color: #444444; border: 1px solid #555555; padding: 20px; width: 50%; margin: 0 auto; border-radius: 10px;">
-        <h2 style="text-align: center; color: #ffffff;">Formulario de Asignación de Tickets</h2>
+    <form action="TicketServlet" method="POST">
+        <h2>Formulario de Asignación de Tickets</h2>
         <input type="hidden" name="action" value="assign">
-        <table border="0" cellpadding="10" cellspacing="0" style="width: 100%; color: #ffffff;">
+        <table>
             <tr>
-                <td style="text-align: right; width: 30%;"><label for="ticketId">ID del Ticket:</label></td>
-                <td style="width: 70%;"><input type="text" id="ticketId" name="ticketId" readonly style="width: 100%; padding: 10px; background-color: #666666; color: #ffffff; border: 1px solid #777777; border-radius: 5px;"></td>
+                <td><label for="ticketId">ID del Ticket:</label></td>
+                <td><input type="text" id="ticketId" name="ticketId" readonly></td>
             </tr>
             <tr>
-                <td style="text-align: right;"><label for="ingeniero">Asignar a:</label></td>
+                <td><label for="ingeniero">Asignar a:</label></td>
                 <td>
-                    <select id="ingeniero" name="ingeniero" onchange="sincronizarIngeniero()" required style="width: 100%; padding: 10px; background-color: #555555; color: #ffffff; border: 1px solid #777777; border-radius: 5px;">
+                    <select id="ingeniero" name="ingeniero" onchange="sincronizarIngeniero()" required>
                         <option value="" disabled selected>Seleccione un ingeniero</option>
                     </select>
                 </td>
             </tr>
             <tr>
                 <td colspan="2" style="text-align: center;">
-                    <input type="submit" value="Asignar Ticket" style="background-color: #007bff; color: #ffffff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                    <input type="submit" value="Asignar Ticket" class="button">
                 </td>
             </tr>
         </table>
     </form>
+
+
 
 </body>
 </html>

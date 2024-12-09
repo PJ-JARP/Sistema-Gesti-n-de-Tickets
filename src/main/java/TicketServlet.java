@@ -17,7 +17,8 @@ public class TicketServlet extends HttpServlet {
         "ing. Daniel Martinez",
         "ing. Felipe Cavazos",
         "ing. Johan Arath",
-        "ing. Garzon Gonzalez"
+        "ing. Garzon Gonzalez",
+        "ing. Silvia Elodia"
     );
 
     private static final String ASIGNACIONES_FILE = "Asignaciones.txt";
@@ -85,28 +86,6 @@ public class TicketServlet extends HttpServlet {
         return folio;
     }
 
-    private void registerTicket(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String id = request.getParameter("id");
-        String descripcion = request.getParameter("descripcion");
-        String prioridad = request.getParameter("prioridad");
-        String estado = request.getParameter("estado");
-        String categoria = request.getParameter("categoria");
-        String asignadoA = request.getParameter("asignadoA");
-
-        // Validaciones básicas
-        if (id == null || descripcion == null || prioridad == null || estado == null || categoria == null || asignadoA == null) {
-            response.getWriter().println("Error: Todos los campos son obligatorios.");
-            return;
-        }
-
-        // Guardar el ticket en el archivo CSV
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("tickets.csv", true))) {
-            writer.write(String.join(",", id, descripcion, prioridad, estado, categoria, asignadoA));
-            writer.newLine();
-        }
-
-        response.getWriter().println("Ticket registrado exitosamente.");
-    }
 
     private void assignTicket(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String ticketId = request.getParameter("ticketId");
@@ -155,4 +134,32 @@ public class TicketServlet extends HttpServlet {
             writer.newLine();
         }
     }
+    
+    private void registerTicket(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String id = request.getParameter("id");
+    String descripcion = request.getParameter("descripcion");
+    String prioridad = request.getParameter("prioridad");
+    String estado = request.getParameter("estado");
+    String categoria = request.getParameter("categoria");
+    String asignadoA = request.getParameter("asignadoA");
+
+    // Validaciones básicas
+    if (id == null || descripcion == null || prioridad == null || estado == null || categoria == null || asignadoA == null) {
+        response.getWriter().println("Error: Todos los campos son obligatorios.");
+        return;
+    }
+
+    // Verificar duplicados
+    if (TicketStorage.ticketExists(id)) {
+        response.getWriter().println("Error: Ya existe un ticket con ese ID.");
+        return;
+    }
+
+    // Crear el ticket y guardarlo
+    Ticket ticket = new Ticket(id, descripcion, new Date().toString(), prioridad, estado, categoria, asignadoA);
+    TicketStorage.saveTicket(ticket);
+
+    response.getWriter().println("Ticket registrado exitosamente.");
+}
+
 }
