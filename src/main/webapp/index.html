@@ -24,14 +24,15 @@
         }
 
         // Función para generar el folio y sincronizar con asignación
-       function generarFolio() {
+          function generarFolio() {
             const tipo = document.getElementById("tipo").value;
             const idField = document.getElementById("id");
 
-            if (!tipo) {
+             if (!tipo) {
                 alert("Por favor, selecciona un tipo de ticket antes de generar el folio.");
                 return;
             }
+
 
             fetch(`TicketServlet?action=generateFolio&tipo=${tipo}`)
                 .then(response => response.text())
@@ -42,70 +43,18 @@
                 .catch(error => console.error("Error al generar el folio:", error));
         }
 
-
         // Función para sincronizar el ingeniero seleccionado con el campo "Asignado a"
-         function sincronizarIngeniero() {
+          function sincronizarIngeniero() {
             const ingenieroSeleccionado = document.getElementById("ingeniero").value;
             document.getElementById("asignadoA").value = ingenieroSeleccionado;
         }
 
-
-        // Actualización de las funciones de registro y asignación
-        //document.addEventListener("DOMContentLoaded", cargarIngenieros);
         
-        // Función para manejar el registro de tickets
-        async function registrarTicket(event) {
-            event.preventDefault();
-
-            const form = event.target;
-            const formData = new FormData(form);
-
-            const response = await fetch("TicketServlet", {
-                method: "POST",
-                body: formData,
-            });
-
-             const result = await response.json();
-
-            if (result.status === "success") {
-                alert(result.message);
-                form.reset();
-            } else {
-                alert(result.message);
-            }
-        }
-            
-        // Función para manejar la asignación de tickets
-        async function asignarTicket(event) {
-            event.preventDefault();
-
-            const form = event.target;
-            const formData = new FormData(form);
-
-            const response = await fetch("TicketServlet", {
-                method: "POST",
-                body: formData,
-            });
-
-            const result = await response.json();
-
-            if (result.status === "success") {
-                alert(result.message);
-                form.reset();
-            } else {
-                alert(result.message);
-            }
-        }
-
-
-        document.addEventListener("DOMContentLoaded", () => {
-            cargarIngenieros();
-            document.getElementById("register-form").addEventListener("submit", registrarTicket);
-            document.getElementById("assign-form").addEventListener("submit", asignarTicket);
-        });
+        // Cargar ingenieros al cargar la página
+        document.addEventListener("DOMContentLoaded", cargarIngenieros);
     </script>
     
-     <style>
+    <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #333333;
@@ -171,23 +120,19 @@
             background-color: #0056b3;
         }
     </style>
-    
 </head>
-
 <body>
 
-      <!-- Menú de navegación entre las interfaces actuales.  -->
-    <nav>
+     <!-- Navigation Bar -->
+     <nav>
         <a href="index.html"><button class="nav-button">Gestión de Tickets</button></a>
         <a href="dashboard.html"><button class="nav-button">Dashboard</button></a>
     </nav>
-
-
-    
-    <h1>Gestión de Tickets</h1>
+     
+ <h1>Gestión de Tickets</h1>
 
      <!-- Formulario de Registro de Tickets -->
-      <form id="register-form" method="POST">
+    <form action="TicketServlet" method="POST">
         <h2>Formulario de Registro de Tickets</h2>
         <input type="hidden" name="action" value="register">
         <table>
@@ -245,8 +190,8 @@
         </table>
     </form>
 
-      <!-- Formulario de Asignación de Tickets -->
-       <form id="assign-form" method="POST">
+    <!-- Formulario de Asignación de Tickets -->
+    <form action="TicketServlet" method="POST">
         <h2>Formulario de Asignación de Tickets</h2>
         <input type="hidden" name="action" value="assign">
         <table>
@@ -269,5 +214,8 @@
             </tr>
         </table>
     </form>
+
+
+
 </body>
 </html>
