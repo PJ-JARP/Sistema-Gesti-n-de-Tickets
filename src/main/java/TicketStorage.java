@@ -2,14 +2,9 @@ import java.io.*;
 import java.util.*;
 
 public class TicketStorage {
-    // Archivo CSV donde se almacenarán los tickets
-   private static final String FILE_NAME = "C:\\Users\\jorge\\OneDrive\\Documentos\\CSV out\\tickets.csv";
-    private static final String FOLIO_FILE = "C:\\Users\\jorge\\OneDrive\\Documentos\\CSV out\\folio_counter.txt";
+    private static final String FILE_NAME = "C:\\Users\\jorge\\OneDrive\\Documentos\\CSV out\\tickets.csv";
 
-
-
-    
-    // Verificar si el archivo existe y crear si no existe
+    // Asegurarse de que el archivo exista
     private static void ensureFileExists() {
         File file = new File(FILE_NAME);
         try {
@@ -22,71 +17,74 @@ public class TicketStorage {
         }
     }
 
+    // Leer todos los tickets del archivo CSV
+    public static List<Ticket> readAllTickets() {
+        ensureFileExists();
+        List<Ticket> tickets = new ArrayList<>();
 
-    // Método para verificar si un ticket ya existe
-    public static boolean ticketExists(String id) {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] values = line.split("\t"); // Separador: tabulaciones (\t)
-                if (values[0].equals(id)) {
-                    return true;
+                String[] values = line.split("\t");
+                if (values.length >= 7) {
+                    Ticket ticket = new Ticket(
+                        values[0], // ID
+                        values[1], // Descripción
+                        values[2], // Fecha de creación
+                        values[3], // Prioridad
+                        values[4], // Estado
+                        values[5], // Categoría
+                        values[6]  // Asignado a
+                    );
+                    tickets.add(ticket);
                 }
             }
         } catch (IOException e) {
             System.err.println("Error al leer el archivo: " + e.getMessage());
-            e.printStackTrace();
         }
-        return false;
+
+        return tickets;
     }
 
-    // Método para guardar un ticket en el archivo CSV
+    // Escribir una lista de tickets en el archivo CSV
+    public static void writeAllTickets(List<Ticket> tickets) {
+        ensureFileExists();
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
+            for (Ticket ticket : tickets) {
+                bw.write(ticket.toCSV());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+        }
+    }
+
+    // Guardar un nuevo ticket
     public static void saveTicket(Ticket ticket) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
-            bw.write(ticket.toCSV()); // toCSV debe usar '\t' como separador
-            bw.newLine();
-        } catch (IOException e) {
-             System.err.println("Error al guardar el ticket: " + e.getMessage());
-            e.printStackTrace();
-        }
+        List<Ticket> tickets = readAllTickets();
+        tickets.add(ticket); // Agregar el nuevo ticket
+        writeAllTickets(tickets); // Guardar toda la lista
     }
 
-    // Método para contar tickets por estado
+    // Verificar si un ticket ya existe
+    public static boolean ticketExists(String id) {
+        return readAllTickets().stream().anyMatch(ticket -> ticket.getId().equals(id));
+    }
+
+    // Contar tickets por estado
     public static int countByStatus(String status) {
-        ensureFileExists();// se asegura de que el archivo exista
-        int count = 0;
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\t"); // Separador: tabulaciones (\t)
-                if (parts.length > 4 && parts[4].trim().equalsIgnoreCase(status)) {
-                    count++;
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error al leer el archivo: " + e.getMessage());
-        }
-        return count;
+        return (int) readAllTickets().stream()
+            .filter(ticket -> ticket.getEstado().equalsIgnoreCase(status))
+            .count();
     }
 
-    // Método para obtener las últimas 5 actividades
+    // Obtener las últimas 5 actividades
     public static List<String> getRecentActivity() {
-        ensureFileExists(); // Asegurarse de que el archivo exista
+        List<Ticket> tickets = readAllTickets();
+        int start = Math.max(0, tickets.size() - 5);
         List<String> recentActivities = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            List<String> allLines = new ArrayList<>();
-            String line;
-
-            // Leer todas las líneas
-            while ((line = reader.readLine()) != null) {
-                allLines.add(line);
-            }
-
-            // Tomar las últimas 5 líneas
-            int start = Math.max(0, allLines.size() - 5);
-            recentActivities = allLines.subList(start, allLines.size());
-        } catch (IOException e) {
-            System.err.println("Error al leer el archivo: " + e.getMessage());
+        for (Ticket ticket : tickets.subList(start, tickets.size())) {
+            recentActivities.add(ticket.toCSV());
         }
         return recentActivities;
     }
