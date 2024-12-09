@@ -102,14 +102,44 @@ public class TicketStorage {
     }
 
     static Map<String, Integer> getMetrics() {
-         ensureFileExists(); // Asegura que el archivo exista
-    Map<String, Integer> metrics = new HashMap<>();
-    metrics.put("Abiertos", 0);
-    metrics.put("En Progreso", 0);
-    metrics.put("Cerrados", 0);
+        ensureFileExists(); // Asegura que el archivo exista
+        Map<String, Integer> metrics = new HashMap<>();
+        metrics.put("Abiertos", 0);
+        metrics.put("En Progreso", 0);
+        metrics.put("Cerrados", 0);
 
      try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
         String line;
+         while ((line = reader.readLine()) != null) {
+             String[] parts = line.split(","); // Asegúrate de que el delimitador sea correcto
+             if (parts.length > 4) {
+                String estado = parts[4].trim();
+                 System.out.println("Estado encontrado: " + estado); // Depuración
+                 
+                if (estado.equalsIgnoreCase("Abierto")) {
+                     
+                     metrics.put("Abiertos", metrics.get("Abiertos") + 1);
+                     
+                 } else if (estado.equalsIgnoreCase("En Progreso")) {
+                     
+                     metrics.put("En Progreso", metrics.get("En Progreso") + 1);
+                     
+                 } else if (estado.equalsIgnoreCase("Resuelto") || estado.equalsIgnoreCase("Cerrado")) {
+                     
+                metrics.put("Cerrados", metrics.get("Cerrados") + 1); // Unificar "Resuelto" y "Cerrados"
+                
+                } else {
+                    System.err.println("Estado no reconocido: " + estado); // Para estados inesperados
+                }
+             }
+         }
+     } catch (IOException e) {
+         System.err.println("Error al leer el archivo para métricas: " + e.getMessage());
+     }
+
+     return metrics;
+ }
+         /*String line;
         while ((line = reader.readLine()) != null) {
             String[] parts = line.split(","); 
             if (parts.length > 4) {
@@ -122,7 +152,7 @@ public class TicketStorage {
     }
 
     return metrics;
-}
+}*/
 
     public static List<String> getRecentActivity() {
     ensureFileExists(); // Asegura que el archivo exista
