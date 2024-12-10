@@ -3,25 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Tickets</title>
+    <title>Gestión de Tickets</title>
+    
+    <script>
+        // Función para cargar la lista de ingenieros
+        function cargarIngenieros() {
+            fetch("TicketServlet?action=getIngenieros")
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById("ingeniero");
+                    select.innerHTML = '<option value="" disabled selected>Seleccione un ingeniero</option>';
+                    data.forEach(ingeniero => {
+                        const option = document.createElement("option");
+                        option.value = ingeniero;
+                        option.textContent = ingeniero;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error("Error al cargar ingenieros:", error));
+        }
+
+        // Función para generar el folio y sincronizar con asignación
+          function generarFolio() {
+            const tipo = document.getElementById("tipo").value;
+            const idField = document.getElementById("id");
+
+             if (!tipo) {
+                alert("Por favor, selecciona un tipo de ticket antes de generar el folio.");
+                return;
+            }
+
+
+            fetch(`TicketServlet?action=generateFolio&tipo=${tipo}`)
+                .then(response => response.text())
+                .then(data => {
+                    idField.value = data;
+                    document.getElementById("ticketId").value = data;
+                })
+                .catch(error => console.error("Error al generar el folio:", error));
+        }
+
+        // Función para sincronizar el ingeniero seleccionado con el campo "Asignado a"
+          function sincronizarIngeniero() {
+            const ingenieroSeleccionado = document.getElementById("ingeniero").value;
+            document.getElementById("asignadoA").value = ingenieroSeleccionado;
+        }
+
+        
+        // Cargar ingenieros al cargar la página
+        document.addEventListener("DOMContentLoaded", cargarIngenieros);
+    </script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333333;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+        }
+        nav {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #444444;
+        }
+        nav a {
+            text-decoration: none;
+            margin: 0 15px;
+        }
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .nav-button:hover {
+            background-color: #0056b3;
+        }
+        form {
+            background-color: #444444;
+            border: 1px solid #555555;
+            padding: 20px;
+            width: 50%;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
+            color: #ffffff;
+        }
+        table input, table select {
+            width: 100%;
+            padding: 10px;
+            background-color: #555555;
+            color: #ffffff;
+            border: 1px solid #777777;
+            border-radius: 5px;
+        }
+        .button {
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Registrar Ticket</h1>
+
+     <!-- Navigation Bar -->
+     <nav>
+        <a href="index.html"><button class="nav-button">Gestión de Tickets</button></a>
+        
+        <a href="dashboard.html"><button class="nav-button">Dashboard</button></a>
+ 
+     </nav>
+     
+ <h1>Gestión de Tickets</h1>
+
+     <!-- Formulario de Registro de Tickets -->
     <form action="TicketServlet" method="POST">
-        <label for="id">ID Ticket:</label><br>
-        <input type="text" id="id" name="id" required><br><br>
-
-        <label for="descripcion">Descripción:</label><br>
-        <textarea id="descripcion" name="descripcion" required></textarea><br><br>
-
-        <label for="prioridad">Prioridad:</label><br>
-        <select id="prioridad" name="prioridad" required>
-            <option value="Alta">Alta</option>
-            <option value="Media">Media</option>
-            <option value="Baja">Baja</option>
-        </select><br><br>
-
-        <input type="submit" value="Registrar Ticket">
+        <h2>Formulario de Registro de Tickets</h2>
+        <input type="hidden" name="action" value="register">
+        <table>
+            <tr>
+                <td><label for="tipo">Tipo de Ticket:</label></td>
+                <td>
+                    <select id="tipo" name="tipo" onchange="generarFolio()" required>
+                        <option value="" disabled selected>Selecciona una opción</option>
+                        <option value="REQ">Requerimiento</option>
+                        <option value="INC">Incidencia</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="id">ID del Ticket:</label></td>
+                <td><input type="text" id="id" name="id" readonly></td>
+            </tr>
+            <tr>
+                <td><label for="descripcion">Descripción:</label></td>
+                <td><input type="text" id="descripcion" name="descripcion" required></td>
+            </tr>
+            <tr>
+                <td><label for="prioridad">Prioridad:</label></td>
+                <td>
+                    <select id="prioridad" name="prioridad" required>
+                        <option value="Alta">Alta</option>
+                        <option value="Media">Media</option>
+                        <option value="Baja">Baja</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="estado">Estado:</label></td>
+                <td>
+                    <select id="estado" name="estado" required>
+                        <option value="Abierto">Abierto</option>
+                        <option value="En Progreso">En Progreso</option>
+                        <!--<option value="Resuelto">Resuelto</option>-->
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="categoria">Categoría:</label></td>
+                <td><input type="text" id="categoria" name="categoria" required></td>
+            </tr>
+            <tr>
+                <td><label for="asignadoA">Asignado a:</label></td>
+                <td><input type="text" id="asignadoA" name="asignadoA" readonly></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <input type="submit" value="Registrar Ticket" class="button">
+                </td>
+            </tr>
+        </table>
     </form>
+
+    <!-- Formulario de Asignación de Tickets -->
+    <form action="TicketServlet" method="POST">
+        <h2>Formulario de Asignación de Tickets</h2>
+        <input type="hidden" name="action" value="assign">
+        <table>
+            <tr>
+                <td><label for="ticketId">ID del Ticket:</label></td>
+                <td><input type="text" id="ticketId" name="ticketId" readonly></td>
+            </tr>
+            <tr>
+                <td><label for="ingeniero">Asignar a:</label></td>
+                <td>
+                    <select id="ingeniero" name="ingeniero" onchange="sincronizarIngeniero()" required>
+                        <option value="" disabled selected>Seleccione un ingeniero de la lista: </option>
+                    </select>
+                </td>
+            </tr>
+           <!-- <tr>
+                <td colspan="2" style="text-align: center;">
+                    <input type="submit" value="Asignar Ticket" class="button">
+                </td>
+            </tr>-->
+        </table>
+    </form>
+
+
+
 </body>
 </html>
