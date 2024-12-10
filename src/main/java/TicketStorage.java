@@ -101,6 +101,7 @@ public class TicketStorage {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
+    
     static Map<String, Integer> getMetrics() {
         ensureFileExists(); // Asegura que el archivo exista
         Map<String, Integer> metrics = new HashMap<>();
