@@ -107,7 +107,7 @@ public class TicketStorage {
         Map<String, Integer> metrics = new HashMap<>();
         metrics.put("Abiertos", 0);
         metrics.put("En Progreso", 0);
-        metrics.put("Cerrados", 0);
+       // metrics.put("Cerrados", 0);
 
      try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
         String line;
